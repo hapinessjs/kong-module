@@ -3,7 +3,15 @@ import { Injectable, Inject } from '@hapiness/core';
 import { Observable } from 'rxjs';
 
 import '@hapiness/http/observable/add/validateResponse';
-import { KongRouteBody, KongRouteResponse, KongRoutesResponse, KongServiceResponse, KongConfig, KONG_MODULE_CONFIG } from '../interfaces';
+import {
+    KongRouteBody,
+    KongRouteResponse,
+    KongRoutesResponse,
+    KongServiceResponse,
+    KongConfig,
+    KONG_MODULE_CONFIG,
+    KongPluginsResponse
+} from '../interfaces';
 import { Debugger } from '../utils';
 
 const __debugger = new Debugger('MongooseAdapter');
@@ -36,6 +44,12 @@ export class KongRoutesService {
         return this.httpService
             .get(`${this.kongAdminUrl}/routes/${routeId}/service`, { json: true })
             .validateResponse<KongServiceResponse>();
+    }
+
+    public getPluginsFromRouteId(routeId: string): Observable<KongPluginsResponse> {
+        return this.httpService
+            .get(`${this.kongAdminUrl}/routes/${routeId}/plugins`, { json: true })
+            .validateResponse<KongPluginsResponse>();
     }
 
     public addRoute(routeOptions: KongRouteBody): Observable<KongRouteResponse> {

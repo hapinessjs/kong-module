@@ -3,12 +3,13 @@ import { HttpService } from '@hapiness/http';
 import '@hapiness/http/observable/add/validateResponse';
 import { Observable } from 'rxjs';
 import {
+    KONG_MODULE_CONFIG,
     KongConfig,
     KongRoutesResponse,
     KongServiceBody,
     KongServiceResponse,
     KongServicesResponse,
-    KONG_MODULE_CONFIG
+    KongPluginsResponse
 } from '../interfaces';
 import { Debugger } from '../utils';
 
@@ -43,6 +44,12 @@ export class KongServicesService {
         return this.httpService
             .get(`${this.kongAdminUrl}/services/${serviceName}/routes`, { json: true })
             .validateResponse<KongRoutesResponse>();
+    }
+
+    public getServicePlugins(serviceName: string): Observable<KongPluginsResponse> {
+        return this.httpService
+            .get(`${this.kongAdminUrl}/services/${serviceName}/plugins`, { json: true })
+            .validateResponse<KongPluginsResponse>();
     }
 
     public addService(serviceOptions: KongServiceBody): Observable<KongServiceResponse> {
