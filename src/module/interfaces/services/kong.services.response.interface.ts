@@ -1,4 +1,4 @@
-import { KongServiceResponse } from './kong.service.response.inteface';
+import { KongServiceResponse } from './kong.service.response.interface';
 
 export interface KongServicesResponse {
     next: string | null;
