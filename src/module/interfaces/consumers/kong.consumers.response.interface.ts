@@ -1,4 +1,4 @@
-import { KongConsumerResponse } from './kong.consumer.response.inteface';
+import { KongConsumerResponse } from './kong.consumer.response.interface';
 
 export interface KongConsumersResponse {
     next: string | null;

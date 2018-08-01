@@ -15,35 +15,3 @@ export interface KongRouteBody {
         id: string;
     }
 }
-
-// import { Entity, Type, Array, Valid, Allow } from '@juneil/entityts';
-
-// export class KongRouteBody extends Entity {
-//     @Array(String)
-//     @Valid('http', 'https')
-//     protocols: ('http' | 'https')[];
-
-//     @Array(String)
-//     @Allow(null, undefined)
-//     methods?: string[] | null;
-
-//     @Array(String)
-//     @Allow(null, undefined)
-//     hosts?: string[] | null;
-
-
-//     @Array(String)
-//     @Allow(null, undefined)
-//     paths?: string[] | null;
-
-//     @Type(Boolean)
-//     strip_path?: boolean;
-
-//     @Type(Boolean)
-//     preserve_host?: boolean;
-
-//     @Type(Object)
-//     service: {
-//         id: string;
-//     }
-// }

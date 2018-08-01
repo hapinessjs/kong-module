@@ -1,5 +1,5 @@
 {
-    "name": "@hapiness/kong-module",
+    "name": "@hapiness/kong",
     "version": "1.0.0",
     "description": "Kong module",
     "main": "commonjs/index.js",
