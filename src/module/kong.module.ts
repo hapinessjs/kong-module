@@ -1,7 +1,7 @@
 import { HapinessModule, CoreModuleWithProviders, Inject, OnRegister } from '@hapiness/core';
 import { KongConsumersService, KongPluginsService, KongRoutesService, KongServicesService } from './services';
 import { KongConfig, KONG_MODULE_CONFIG } from './interfaces';
-import { Observable } from '../../node_modules/rxjs';
+import { Observable } from 'rxjs';
 
 @HapinessModule({
     version: '1.1.1',

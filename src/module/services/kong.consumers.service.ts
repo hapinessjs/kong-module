@@ -4,13 +4,17 @@ import { Observable } from 'rxjs';
 
 import '@hapiness/http/observable/add/validateResponse';
 import { KongConsumerBody, KongConsumerResponse, KongConsumersResponse, KONG_MODULE_CONFIG, KongConfig } from '../interfaces';
-import { Debugger } from '../utils';
+import { Debugger, filterAllowedKeyInObject } from '../utils';
 
-const __debugger = new Debugger('MongooseAdapter');
+const __debugger = new Debugger('KongConsumersService');
 
 @Injectable()
 export class KongConsumersService {
     private kongAdminUrl: string;
+    private allowedKeys = [
+        'username',
+        'custom_id'
+    ];
 
     constructor(
         private httpService: HttpService,
@@ -20,13 +24,13 @@ export class KongConsumersService {
         this.kongAdminUrl = this.config.adminSecureUrl || this.config.adminUrl;
     }
 
-    public getConsumer(consumerName: string): Observable<KongConsumerResponse | undefined> {
+    public getConsumer(consumerName: string): Observable<KongConsumerResponse> {
         return this.httpService
             .get(`${this.kongAdminUrl}/consumers/${consumerName}`, { json: true })
             .validateResponse<KongConsumerResponse>();
     }
 
-    public getConsumers(): Observable<KongConsumersResponse | undefined> {
+    public getConsumers(): Observable<KongConsumersResponse> {
         return this.httpService
             .get(`${this.kongAdminUrl}/consumers`, { json: true })
             .validateResponse<KongConsumersResponse>();
@@ -35,26 +39,34 @@ export class KongConsumersService {
     public addConsumer(consumerOptions: KongConsumerBody): Observable<KongConsumerResponse> {
         return this
             .httpService
-            .post(`${this.kongAdminUrl}/consumers`, { body: consumerOptions, json: true })
+            .post(`${this.kongAdminUrl}/consumers`, { body: filterAllowedKeyInObject(this.allowedKeys, consumerOptions), json: true })
             .validateResponse<KongConsumerResponse>();
     }
 
     public upsertConsumer(consumerOptions: KongConsumerBody): Observable<KongConsumerResponse> {
         return this.httpService
-            .put(`${this.kongAdminUrl}/consumers`, { body: consumerOptions, json: true })
+            .put(`${this.kongAdminUrl}/consumers`, { body: filterAllowedKeyInObject(this.allowedKeys, consumerOptions), json: true })
             .validateResponse<KongConsumerResponse>();
     }
 
     public updateConsumer(consumerName: string, consumerOptions: KongConsumerBody): Observable<KongConsumerResponse> {
         return this.httpService
-            .patch(`${this.kongAdminUrl}/consumers/${consumerName}`, { body: consumerOptions, json: true })
+            .patch(`${this.kongAdminUrl}/consumers/${consumerName}`, {
+                body: filterAllowedKeyInObject(this.allowedKeys, consumerOptions),
+                json: true
+            })
             .validateResponse<KongConsumerResponse>();
     }
 
-    public removeConsumer(consumerName: string): Observable<undefined> {
+    public removeConsumer(consumerNameOrId: string): Observable<void> {
         return this.httpService
-            .delete(`${this.kongAdminUrl}/consumers/${consumerName}`, { json: true })
-            .validateResponse(null);
+            .delete(`${this.kongAdminUrl}/consumers/${consumerNameOrId}`, { json: true })
+            .validateResponse();
     }
 
+    public createConsumerApplication<T = any, R = any>(consumerNameOrId: string, pluginName: string, config: T): Observable<R> {
+        return this.httpService
+            .post(`${this.kongAdminUrl}/consumers/${consumerNameOrId}/${pluginName}`, { json: true, body: config })
+            .validateResponse<R>()
+    }
 }

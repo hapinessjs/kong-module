@@ -4,13 +4,21 @@ import { Observable } from 'rxjs';
 
 import '@hapiness/http/observable/add/validateResponse';
 import { KongPluginBody, KongPluginResponse, KongPluginsResponse, KONG_MODULE_CONFIG, KongConfig } from '../interfaces';
-import { Debugger } from '../utils';
+import { Debugger, filterAllowedKeyInObject } from '../utils';
 
-const __debugger = new Debugger('MongooseAdapter');
+const __debugger = new Debugger('KongPluginsService');
 
 @Injectable()
 export class KongPluginsService {
     private kongAdminUrl: string;
+    private allowedKeys = [
+        'name',
+        'consumer_id',
+        'service_id',
+        'route_id',
+        'config',
+        'enabled'
+    ];
 
     constructor(
         private httpService: HttpService,
@@ -20,13 +28,13 @@ export class KongPluginsService {
         this.kongAdminUrl = this.config.adminSecureUrl || this.config.adminUrl;
     }
 
-    public getPlugin(pluginId: string): Observable<KongPluginResponse | undefined> {
+    public getPlugin(pluginId: string): Observable<KongPluginResponse> {
         return this.httpService
             .get(`${this.kongAdminUrl}/plugins/${pluginId}`, { json: true })
             .validateResponse<KongPluginResponse>();
     }
 
-    public getPlugins(): Observable<KongPluginsResponse | undefined> {
+    public getPlugins(): Observable<KongPluginsResponse> {
         return this.httpService
             .get(`${this.kongAdminUrl}/plugins`, { json: true })
             .validateResponse<KongPluginsResponse>();
@@ -47,25 +55,28 @@ export class KongPluginsService {
     public addPlugin(pluginOptions: KongPluginBody): Observable<KongPluginResponse> {
         return this
             .httpService
-            .post(`${this.kongAdminUrl}/plugins`, { body: pluginOptions, json: true })
+            .post(`${this.kongAdminUrl}/plugins`, { body: filterAllowedKeyInObject(this.allowedKeys, pluginOptions), json: true })
             .validateResponse<KongPluginResponse>();
     }
 
     public upsertPlugin(pluginOptions: KongPluginBody): Observable<KongPluginResponse> {
         return this.httpService
-            .put(`${this.kongAdminUrl}/plugins`, { body: pluginOptions, json: true })
+            .put(`${this.kongAdminUrl}/plugins`, { body: filterAllowedKeyInObject(this.allowedKeys, pluginOptions), json: true })
             .validateResponse<KongPluginResponse>();
     }
 
     public updatePlugin(pluginId: string, pluginOptions: KongPluginBody): Observable<KongPluginResponse> {
         return this.httpService
-            .patch(`${this.kongAdminUrl}/plugins/${pluginId}`, { body: pluginOptions, json: true })
+            .patch(`${this.kongAdminUrl}/plugins/${pluginId}`, {
+                body: filterAllowedKeyInObject(this.allowedKeys, pluginOptions),
+                json: true
+            })
             .validateResponse<KongPluginResponse>();
     }
 
-    public removePlugin(pluginId: string): Observable<undefined> {
+    public removePlugin(pluginId: string): Observable<void> {
         return this.httpService
             .delete(`${this.kongAdminUrl}/plugins/${pluginId}`, { json: true })
-            .validateResponse(null);
+            .validateResponse();
     }
 }

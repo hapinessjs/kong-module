@@ -12,13 +12,22 @@ import {
     KONG_MODULE_CONFIG,
     KongPluginsResponse
 } from '../interfaces';
-import { Debugger } from '../utils';
+import { Debugger, filterAllowedKeyInObject } from '../utils';
 
-const __debugger = new Debugger('MongooseAdapter');
+const __debugger = new Debugger('KongRoutesService');
 
 @Injectable()
 export class KongRoutesService {
     private kongAdminUrl: string;
+    private allowedKeys = [
+        'protocols',
+        'methods',
+        'hosts',
+        'paths',
+        'strip_path',
+        'preserve_host',
+        'service'
+    ];
 
     constructor(
         private httpService: HttpService,
@@ -28,7 +37,7 @@ export class KongRoutesService {
         this.kongAdminUrl = this.config.adminSecureUrl || this.config.adminUrl;
     }
 
-    public getRoute(routeId: string): Observable<KongRouteResponse | undefined> {
+    public getRoute(routeId: string): Observable<KongRouteResponse> {
         return this.httpService
             .get(`${this.kongAdminUrl}/routes/${routeId}`, { json: true })
             .validateResponse<KongRouteResponse>();
@@ -55,17 +64,17 @@ export class KongRoutesService {
     public addRoute(routeOptions: KongRouteBody): Observable<KongRouteResponse> {
         return this
             .httpService
-            .post(`${this.kongAdminUrl}/routes`, { body: routeOptions, json: true })
+            .post(`${this.kongAdminUrl}/routes`, { body: filterAllowedKeyInObject(this.allowedKeys, routeOptions), json: true })
             .validateResponse<KongRouteResponse>();
     }
 
     public updateRoute(routeId: string, routeOptions: KongRouteBody): Observable<KongRouteResponse> {
         return this.httpService
-            .patch(`${this.kongAdminUrl}/routes/${routeId}`, { body: routeOptions, json: true })
+            .patch(`${this.kongAdminUrl}/routes/${routeId}`, { body: filterAllowedKeyInObject(this.allowedKeys, routeOptions), json: true })
             .validateResponse<KongRouteResponse>();
     }
 
-    public removeRoute(routeId: string): Observable<undefined> {
+    public removeRoute(routeId: string): Observable<void> {
         return this.httpService
             .delete(`${this.kongAdminUrl}/routes/${routeId}`, { json: true })
             .validateResponse();

@@ -11,14 +11,26 @@ import {
     KongServicesResponse,
     KongPluginsResponse
 } from '../interfaces';
-import { Debugger } from '../utils';
+import { Debugger, filterAllowedKeyInObject } from '../utils';
 
 
-const __debugger = new Debugger('MongooseAdapter');
+const __debugger = new Debugger('KongServicesService');
 
 @Injectable()
 export class KongServicesService {
     private kongAdminUrl: string;
+    private allowedKeys = [
+        'name',
+        'protocol',
+        'host',
+        'port',
+        'path',
+        'retries',
+        'connect_timeout',
+        'write_timeout',
+        'read_timeout',
+        'url'
+    ];
 
     constructor(
         private httpService: HttpService,
@@ -26,6 +38,7 @@ export class KongServicesService {
     ) {
         __debugger.debug('constructor', 'Entering KongServicesService#constructor');
         this.kongAdminUrl = this.config.adminSecureUrl || this.config.adminUrl;
+
     }
 
     public getService(serviceName: string): Observable<KongServiceResponse> {
@@ -55,18 +68,21 @@ export class KongServicesService {
     public addService(serviceOptions: KongServiceBody): Observable<KongServiceResponse> {
         return this
             .httpService
-            .post(`${this.kongAdminUrl}/services`, { body: serviceOptions, json: true })
+            .post(`${this.kongAdminUrl}/services`, { body: filterAllowedKeyInObject(this.allowedKeys, serviceOptions), json: true })
             .validateResponse<KongServiceResponse>();
     }
 
     public updateService(serviceName: string, serviceOptions: KongServiceBody): Observable<KongServiceResponse> {
         return this
             .httpService
-            .patch(`${this.kongAdminUrl}/services/${serviceName}`, { body: serviceOptions, json: true })
+            .patch(`${this.kongAdminUrl}/services/${serviceName}`, {
+                body: filterAllowedKeyInObject(this.allowedKeys, serviceOptions),
+                json: true
+            })
             .validateResponse<KongServiceResponse>();
     }
 
-    public removeService(serviceName: string): Observable<undefined> {
+    public removeService(serviceName: string): Observable<void> {
         return this.httpService
             .delete(`${this.kongAdminUrl}/services/${serviceName}`, { json: true })
             .validateResponse();
