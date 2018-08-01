@@ -33,9 +33,5 @@ export class KongModule implements OnRegister {
         if (!this.config.adminUrl && !this.config.adminSecureUrl) {
             return Observable.throw('Kong module requires an adminUrl or an adminSecureUrl');
         }
-
-        if (!this.config.proxyUrl && !this.config.proxySecureUrl) {
-            return Observable.throw('Kong module requires a proxyUrl or a proxySecureUrl');
-        }
     }
 }
