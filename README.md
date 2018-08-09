@@ -5,9 +5,6 @@
     <a href="https://travis-ci.org/hapinessjs/kong-module.svg?branch=master">
         <img src="https://travis-ci.org/hapinessjs/kong-module.svg?branch=master" alt="build" />
     </a>
-    <a href="https://coveralls.io/github/hapinessjs/kong-module?branch=master">
-        <img src="https://coveralls.io/repos/github/hapinessjs/kong-module/badge.svg?branch=master" alt="coveralls" />
-    </a>
     <a href="https://david-dm.org/hapinessjs/kong-module">
         <img src="https://david-dm.org/hapinessjs/kong-module.svg" alt="dependencies" />
     </a>
