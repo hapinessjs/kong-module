@@ -74,6 +74,7 @@
     },
     "homepage": "https://github.com/hapinessjs/kong-module#readme",
     "dependencies": {
+        "@hapiness/biim": "^1.4.0",
         "debug": "^3.1.0"
     },
     "devDependencies": {
